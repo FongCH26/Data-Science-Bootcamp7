@@ -1,0 +1,126 @@
+---
+title: "Exploratory Data  Diamonds"
+author: "Anirut"
+date: "2023-03-22"
+output: html_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(patchwork)
+```
+
+Understanding the data.
+```{r message=FALSE}
+glimpse(diamonds)
+```
+Diamonds is a built-in dataset in ggplot.
+
+A dataset containing the prices and other attributes of almost 54,000 diamonds. The variables are as follows
+
+10 variables:
+
+- price 
+  price in US dollars ($326-$18,823)
+- carat 
+  weight of the diamond (0.2-5.01)
+- cut 
+  quality of the cut (Fair, Good, Very Good, Premium, Ideal)
+- color 
+  diamond colour, from D (best) to J (worst)
+- clarity 
+  a measurement of how clear the diamond is (I1 (worst), SI2, SI1, VS2, VS1, VVS2, VVS1, IF    (best))
+- x length in mm (0-10.74)
+- y width in mm (0-58.9)
+- z depth in mm (0-31.8)
+- depth 
+  total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43-79)
+- table 
+  width of top of diamond relative to widest point (43-95)
+  
+### Data Visualization.
+```{r message=FALSE}
+ggplot(diamonds %>% sample_frac(0.5), aes(carat, price, col = clarity)) +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    title = "Relationship Between Carat, Clarity and Price",
+    x = "Carat",
+    y = "Price",
+    caption = "Datasource: diamonds ggplot2"
+  ) +
+  scale_color_brewer(type = "seq", palette = 8)
+```
+
+From this chart, it's like more carats and more clarity result in higher price.
+
+```{r message=FALSE}
+ggplot(diamonds %>% sample_frac(0.5), aes(clarity, carat, fill=clarity)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    title = "Diamonds' Carat and Clarity",
+    x = "Clarity",
+    y = "Carat",
+    caption = "Datasource: diamonds ggplot2"
+  )
+```
+
+chart show that diamonds with less carat and high clarity can fetch a very high price.
+
+```{r message=FALSE}
+ggplot(diamonds %>% sample_frac(0.5), aes(carat, price, col=color)) +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    title = "Relationship Between Price, Carat and Color"
+  )
+```
+
+Looking at the relationship of price carat and color, diamonds with best color have higher price than worse color with the same carat, Carat has more effect on price than color.
+
+```{r message=FALSE}
+diamonds %>%
+  ggplot(aes(table,depth,col=cut)) +
+  geom_point(size = 1,alpha = 0.5) +
+  scale_color_brewer(type = "div", palette = 5) +
+  labs(
+    title = "Relationship On Diamonds and Cut Scale",
+    subtitle = "We can see that to get an ideal cut, the size of table and depth is centralize at a certain point.",
+    x = "Table",
+    y = "Depth",
+    caption = "Datasource: diamonds in ggplot2"
+  ) +
+  theme_minimal()
+```
+
+We can see that to get an ideal cut, the size of table and depth is centralize at a certain point.
+
+```{r message=FALSE}
+h1 <- ggplot(diamonds %>% sample_n(1000),
+       aes(carat)) +
+  geom_histogram(bins = 20)
+h2 <- ggplot(diamonds %>% sample_n(1000),
+       aes(cut)) +
+  geom_bar()
+h3 <- ggplot(diamonds %>% sample_n(1000),
+       aes(color)) +
+  geom_bar()
+h4 <- ggplot(diamonds %>% sample_n(1000),
+       aes(clarity)) +
+  geom_bar()
+h5 <- ggplot(diamonds %>% sample_n(1000),
+       aes(depth)) +
+  geom_histogram(bins = 20)
+h6 <- ggplot(diamonds %>% sample_n(1000),
+       aes(price)) +
+  geom_histogram(bins = 20)
+h7 <- ggplot(diamonds %>% sample_n(1000),
+             aes(table)) +
+  geom_histogram(bins = 20)
+
+(h1 + h3 + h4) / (h5 + h6 + h7) / h2
+```
+
+
